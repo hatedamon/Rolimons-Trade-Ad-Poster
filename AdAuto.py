@@ -43,20 +43,19 @@ def post_trade_ad(trade_ad_counter):
     url = "https://www.rolimons.com/tradeapi/create"
     headers = {"Content-Type": "application/json"}
     payload = {
-        "player_id": 0, # replace with your UserID, find this after clicking the "Profile" www.roblox.com/users/<UrIDsHere>/profile
-        "offer_item_ids": [0, 0, 0, 0], # max 4, replace with ur ItemIDs u wanna offer. u can find here -> www.roblox.com/catalog/<ItemID/<name>
-        "request_item_ids": [0, 0], # same process applys here but with what items ur looking for, max 4 
+        "player_id": 879828802, # replace with your UserID, find this after clicking the "Profile" www.roblox.com/users/<UrIDsHere>/profile
+        "offer_item_ids": [439945661, 494291269, 628771505, 564449640], # max 4, replace with ur ItemIDs u wanna offer. u can find here -> www.roblox.com/catalog/<ItemID/<name>
+        "request_item_ids": [1744060292, 51346471], # same process applys here but with what items ur looking for, max 4 
         "request_tags": ["any", "adds"] # these take up request slots aswell u need under 4 requests.
     }
-    with requests.Session() as session: # making the request with ur cookie data to validate it
+    with requests.Session() as session: # adding cookies to validate the request
         response = session.post(url, headers=headers, cookies=cookies, data=json.dumps(payload))
-        if response.status_code == 200: # this doesnt work but ok
-            print("Failed to post ad")
+        if response.status_code == 200:
+            print("Failed to post ad") # literally doesnt work but ok (theres no validiation response)
         else:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"Posted at {timestamp} || Total: {trade_ad_counter}/60")
 
-# making console look pretty
 if __name__ == "__main__":
     trade_ad_counter = 0
     while True:
@@ -64,11 +63,11 @@ if __name__ == "__main__":
         p = Process(target=post_trade_ad, args=(trade_ad_counter,))
         p.start()
         p.join()
-        remaining_time = 903  
+        remaining_time = 903  # adjusted to 903 seconds to prevent pre firing
         while remaining_time > 0:
-            progress = int((903 - remaining_time) / 903 * 20) # 903 to counter accidentally posting before countdown ends
-            percentage = int((903 - remaining_time) / 903 * 100) 
-            progress_bar = "[" + "|" * progress + " " * (70 - progress) + "]"
+            progress = int((903 - remaining_time) / 903 * 20)  # corrected calculation
+            percentage = int((903 - remaining_time) / 903 * 100)
+            progress_bar = "[" + "|" * progress + " " * (20 - progress) + "]"
             print(f"\rPosting in {int(remaining_time)} || {progress_bar} {percentage}% | Total => {trade_ad_counter}", end="", flush=True)
             time.sleep(1)
             remaining_time -= 1
