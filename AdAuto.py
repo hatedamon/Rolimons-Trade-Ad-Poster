@@ -43,9 +43,9 @@ def post_trade_ad(trade_ad_counter):
     url = "https://www.rolimons.com/tradeapi/create"
     headers = {"Content-Type": "application/json"}
     payload = {
-        "player_id": 879828802, # replace with your UserID, find this after clicking the "Profile" www.roblox.com/users/<UrIDsHere>/profile
-        "offer_item_ids": [439945661, 494291269, 628771505, 564449640], # max 4, replace with ur ItemIDs u wanna offer. u can find here -> www.roblox.com/catalog/<ItemID/<name>
-        "request_item_ids": [1744060292, 51346471], # same process applys here but with what items ur looking for, max 4 
+        "player_id": 0, # replace with your UserID, find this after clicking the "Profile" www.roblox.com/users/<UrIDsHere>/profile
+        "offer_item_ids": [0, 0, 0, 0], # max 4, replace with ur ItemIDs u wanna offer. u can find here -> www.roblox.com/catalog/<ItemID/<name>
+        "request_item_ids": [0, 0], # same process applys here but with what items ur looking for, max 4 
         "request_tags": ["any", "adds"] # these take up request slots aswell u need under 4 requests.
     }
     with requests.Session() as session: # making the request with ur cookie data to validate it
