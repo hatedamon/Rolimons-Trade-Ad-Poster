@@ -1,14 +1,17 @@
 # author @swedish.pyscho
 
-USERNAME = "YourUsername"
-INCLUDE_ON_HOLD = True # True or False
-COOKIES = { # Use EditThisCookie on Rolimons to find these
+USERNAME = "YourUserHere"
+INCLUDE_ON_HOLD = True # or False
+COOKIES = { # Use EditThisCookie to fetch these from https://www.rolimons.com/
     '_RoliData': 'Value',
     '_RoliVerification': 'Value'
 }
 
+# Thats all, jus code down here.
+
 import importlib.util
 import sys
+from colorama import Fore, Style
 
 def Install(module_name):
     try:
@@ -22,7 +25,7 @@ def Install(module_name):
             print(f"Failed to install {module_name}: {e}")
             sys.exit(1)
 
-required_modules = ["requests", "json", "time", "multiprocessing", "datetime"]
+required_modules = ["requests", "json", "time", "multiprocessing", "datetime", "colorama"]
 for module in required_modules:
     Install(module)
 
@@ -61,16 +64,67 @@ def Post(trade_ad_counter, player_id, offer_item_ids):
         "request_item_ids": [],
         "request_tags": ["upgrade", "demand", "any"]
     }
-    with requests.Session() as session:
-        response = session.post(url, headers=headers, cookies=COOKIES, data=json.dumps(payload))
-        if response.status_code == 200:
-            print("Trade ad posted successfully")
+    cooldown_hit = False  
+    while True:
+        with requests.Session() as session:
+            response = session.post(url, headers=headers, cookies=COOKIES, data=json.dumps(payload))
+            if response.status_code == 200:
+                response_data = response.json()
+                if response_data.get("success"):
+                    print(f"{Fore.GREEN}Trade ad posted successfully{Style.RESET_ALL}")
+                    break
+                else:
+                    print(f"{Fore.RED}Failed to post ad{Style.RESET_ALL}")
+                    print(f"Response: {response.content.decode()}")
+            if response.status_code == 400 and response.json().get("code") == 7:
+                print(f"{Fore.YELLOW}Cooldown hit, waiting 15m...{Style.RESET_ALL}")
+                cooldown_hit = True
+                time.sleep(900)  
+            else:
+                break
+        if not cooldown_hit:
+            time.sleep(950) 
+            remaining_time = 950
+            while remaining_time > 0:
+                progress = int((950 - remaining_time) / 950 * 20)
+                percentage = int((950 - remaining_time) / 950 * 100)
+                progress_bar = "[" + "#" * progress + " " * (20 - progress) + "]"
+                print(f"\rPosting in {int(remaining_time)} || {progress_bar} {percentage}% | Total => {trade_ad_counter}", end="", flush=True)
+                time.sleep(1)
+                remaining_time -= 1
+            print()
         else:
-            print("Failed to post ad")
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Posted at {timestamp} || Total: {trade_ad_counter}/60")
+            cooldown_hit = False  
+
+def Startup():
+    print("Rolimons Trade Ad Automater")
+    print("Author: @SWEDISH.PSYCHO")
+    print("Version: 2.2")
+    print(f"{Fore.CYAN}          _____          {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}         /\\    \\         {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}        /::\\    \\        {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       /::::\\    \\       {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}      /::::::\\    \\      {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}     /:::/\\:::\\    \\     {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}    /:::/__\\:::\\    \\    {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}   /::::\\   \\:::\\    \\   {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}  /::::::\\   \\:::\\    \\  {Style.RESET_ALL}")
+    print(f"{Fore.CYAN} /:::/\\:::\\   \\:::\\____\\ {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}/:::/  \\:::\\   \\:::|    |{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}\\::/   |::::\\  /:::|____|{Style.RESET_ALL}")
+    print(f"{Fore.CYAN} \\/____|:::::\\/:::/    / {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       |:::::::::/    /  {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       |::|\\::::/    /   {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       |::| \\::/____/    {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       |::|  ~|          {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       |::|   |          {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}       \\::|   |          {Style.RESET_ALL}")
+    print(f"{Fore.CYAN}        \\:|   |          {Style.RESET_ALL}")    
+    print(f"{Fore.CYAN}         \\|___|          {Style.RESET_ALL}")
+    print()
 
 if __name__ == "__main__":
+    Startup()
     user_id = ConvertID(USERNAME)
     if not user_id:
         print("Failed to find user ID for the username provided.")
@@ -79,7 +133,6 @@ if __name__ == "__main__":
     if not offer_item_ids:
         print("Failed to find collectible items for the user.")
         sys.exit(1)
-    
     trade_ad_counter = 0
     while True:
         trade_ad_counter += 1
@@ -94,3 +147,4 @@ if __name__ == "__main__":
             print(f"\rPosting in {int(remaining_time)} || {progress_bar} {percentage}% | Total => {trade_ad_counter}", end="", flush=True)
             time.sleep(1)
             remaining_time -= 1
+        print() 
